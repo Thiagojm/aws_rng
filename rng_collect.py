@@ -1,5 +1,3 @@
-# lxterminal -e python3 rng_collect.py
-
 # Default imports
 import time
 from time import localtime, strftime

@@ -1,17 +1,25 @@
+To make the raspberry autostart the processes:
+
 mkdir /home/pi/.config/autostart
 nano /home/pi/.config/autostart/rng.desktop
 
+Save this inside the file:
 [Desktop Entry]
 Type=Application
 Name=RNG
-Exec=xterm -hold -e '/usr/bin/python3 /home/pi/Desktop/RngKitCLI/rng_boot.py'
+Exec=xterm -hold -e '/usr/bin/python3 /home/pi/Desktop/aws_rng/rng_collect.py'
 
-or 
+then
 
+nano /home/pi/.config/autostart/send.desktop
+
+Save this inside the file:
 [Desktop Entry]
 Type=Application
-Name=RNG
-Exec=xterm -hold -e 'cd /home/pi/Desktop/go_rng/ && go run .'
+Name=SEND
+Exec=xterm -hold -e '/usr/bin/python3 /home/pi/Desktop/aws_rng/send_aws.py'
+
+reboot
 
 #####################
 
