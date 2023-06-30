@@ -20,7 +20,7 @@ env_vars = dotenv_values('variables.env')
 # Parameters
 sample_value = int(env_vars['SAMPLE_VALUE'])
 interval_value = int(env_vars['INTERVAL_VALUE'])
-# Set the duration in seconds (15 minutes = 900 seconds)
+# Set the sample duration in seconds (15 minutes = 900 seconds)
 sample_duration = int(env_vars['SAMPLE_DURATION'])
 
 
