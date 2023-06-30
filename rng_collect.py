@@ -13,6 +13,18 @@ import secrets
 
 from bitstring import BitArray
 
+# Parameters
+sample_value = 32
+interval_value = 1
+# Set the duration in seconds (15 minutes = 900 seconds)
+duration = 5
+
+
+# Folders
+temp_folder = 'temp_files'
+upload_folder = 'waiting_upload'
+
+
 def find_rng():
     rng_com_port = None
 
@@ -60,18 +72,20 @@ def start_serial(rng_com_port):
     ser.flushInput()
     return ser
 
-def pseudo_cap(sample_value, interval_value):
+def pseudo_cap(sample_value, interval_value, temp_folder, duration):
     blocksize = int(sample_value / 8)
     file_name = time.strftime(
         f"%Y%m%d-%H%M%S_pseudo_s{sample_value}_i{interval_value}")
     file_path = os.path.abspath(os.path.dirname(__file__))
-    file_name = f"{file_path}/1-SavedFiles/{file_name}"
+    file_name = f"{file_path}/{temp_folder}/{file_name}"
     num_loop = 1
     total_bytes = 0
     print(f"Starting capture:\n")
     print(f"Saving to file {file_name}\n")
     try:
-        while True:
+        # Get the current time
+        start_time = time.time()
+        while (time.time() - start_time) < duration:
             total_bytes += blocksize
             print(f"Collecting data - Loop: {num_loop} - Total bytes collected: {total_bytes}")            
             start_cap = time.time()
@@ -100,20 +114,24 @@ def pseudo_cap(sample_value, interval_value):
     except KeyboardInterrupt:
         print(f"Capture stopped by user, closing and exiting...")
         print(f"Total bytes collected: {total_bytes}, saved to {file_name}")
+        return
+    copy_to_upload_folder(upload_folder)
+    pseudo_cap(sample_value, interval_value, temp_folder, duration)
 
-
-def trng3_cap(sample_value, interval_value, ser):
+def trng3_cap(sample_value, interval_value, ser, temp_folder, duration):
     blocksize = int(sample_value / 8)
     file_name = time.strftime(
         f"%Y%m%d-%H%M%S_trng_s{sample_value}_i{interval_value}")
     file_path = os.path.abspath(os.path.dirname(__file__))
-    file_name = f"{file_path}/1-SavedFiles/{file_name}"
+    file_name = f"{file_path}/{temp_folder}/{file_name}"
     num_loop = 1
     total_bytes = 0
     print(f"Starting capture:\n")
     print(f"Saving to file {file_name}\n")
     try:
-        while True:
+        # Get the current time
+        start_time = time.time()
+        while (time.time() - start_time) < duration:
             total_bytes += blocksize
             print(f"Collecting data - Loop: {num_loop} - Total bytes collected: {total_bytes}")            
             start_cap = time.time()
@@ -144,16 +162,33 @@ def trng3_cap(sample_value, interval_value, ser):
             os.system('stty -F '+rng_com_port+' min 1')
         print(f"Capture stopped by user, closing serial port and exiting...")
         print(f"Total bytes collected: {total_bytes}, saved to {file_name}")
+        return
+    copy_to_upload_folder(upload_folder)
+    trng3_cap(sample_value, interval_value, ser, temp_folder, duration)
+    
+    
+#copy all files from temp_folder to upload_folder
+def copy_to_upload_folder(upload_folder):
+    for file in os.listdir(temp_folder):
+        try:
+            os.rename(f"{temp_folder}/{file}", f"{upload_folder}/{file}")
+            print(f"File {file} copied to {upload_folder}")
+        except Exception as e:
+            print(f"Error copying file {file}: {e}")   
+    
 
+def main():
+    copy_to_upload_folder(upload_folder)
+    rng_com_port = find_rng()      
+    if rng_com_port != None:        
+        ser = start_serial(rng_com_port)
+        trng3_cap(sample_value, interval_value, ser, temp_folder, duration)
+    else:
+        pseudo_cap(sample_value, interval_value, temp_folder, duration)
 
 if __name__ == "__main__":
     print("\n", f"#" * 29, "\n")
-    print(f"Hello, Welcome to the RngKitCLI - ver 0.1 - by Thiago Jung")
+    print(f"Hello, Welcome to the rng_aws - ver 0.1 - by Thiago Jung")
     print("\n", f"#" * 29, "\n")
-    rng_com_port = find_rng()
-    sample_value, interval_value = 32, 1
-    if rng_com_port != None:        
-        ser = start_serial(rng_com_port)
-        trng3_cap(sample_value, interval_value, ser)
-    else:
-        pseudo_cap(sample_value, interval_value)
+    main()
+    
