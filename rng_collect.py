@@ -12,17 +12,21 @@ import secrets
 # External imports
 
 from bitstring import BitArray
+from dotenv import dotenv_values
+
+# Load parameters from .env file
+env_vars = dotenv_values('variables.env')
 
 # Parameters
-sample_value = 32
-interval_value = 1
+sample_value = int(env_vars['SAMPLE_VALUE'])
+interval_value = int(env_vars['INTERVAL_VALUE'])
 # Set the duration in seconds (15 minutes = 900 seconds)
-duration = 5
+sample_duration = int(env_vars['SAMPLE_DURATION'])
 
 
 # Folders
-temp_folder = 'temp_files'
-upload_folder = 'waiting_upload'
+temp_folder = env_vars['TEMP_FOLDER']
+upload_folder = env_vars['UPLOAD_FOLDER']
 
 
 def find_rng():
@@ -72,7 +76,7 @@ def start_serial(rng_com_port):
     ser.flushInput()
     return ser
 
-def pseudo_cap(sample_value, interval_value, temp_folder, duration):
+def pseudo_cap(sample_value, interval_value, temp_folder, sample_duration):
     blocksize = int(sample_value / 8)
     file_name = time.strftime(
         f"%Y%m%d-%H%M%S_pseudo_s{sample_value}_i{interval_value}")
@@ -85,7 +89,7 @@ def pseudo_cap(sample_value, interval_value, temp_folder, duration):
     try:
         # Get the current time
         start_time = time.time()
-        while (time.time() - start_time) < duration:
+        while (time.time() - start_time) < sample_duration:
             total_bytes += blocksize
             print(f"Collecting data - Loop: {num_loop} - Total bytes collected: {total_bytes}")            
             start_cap = time.time()
@@ -116,9 +120,9 @@ def pseudo_cap(sample_value, interval_value, temp_folder, duration):
         print(f"Total bytes collected: {total_bytes}, saved to {file_name}")
         return
     copy_to_upload_folder(upload_folder)
-    pseudo_cap(sample_value, interval_value, temp_folder, duration)
+    pseudo_cap(sample_value, interval_value, temp_folder, sample_duration)
 
-def trng3_cap(sample_value, interval_value, ser, temp_folder, duration):
+def trng3_cap(sample_value, interval_value, ser, temp_folder, sample_duration):
     blocksize = int(sample_value / 8)
     file_name = time.strftime(
         f"%Y%m%d-%H%M%S_trng_s{sample_value}_i{interval_value}")
@@ -131,7 +135,7 @@ def trng3_cap(sample_value, interval_value, ser, temp_folder, duration):
     try:
         # Get the current time
         start_time = time.time()
-        while (time.time() - start_time) < duration:
+        while (time.time() - start_time) < sample_duration:
             total_bytes += blocksize
             print(f"Collecting data - Loop: {num_loop} - Total bytes collected: {total_bytes}")            
             start_cap = time.time()
@@ -164,7 +168,7 @@ def trng3_cap(sample_value, interval_value, ser, temp_folder, duration):
         print(f"Total bytes collected: {total_bytes}, saved to {file_name}")
         return
     copy_to_upload_folder(upload_folder)
-    trng3_cap(sample_value, interval_value, ser, temp_folder, duration)
+    trng3_cap(sample_value, interval_value, ser, temp_folder, sample_duration)
     
     
 #copy all files from temp_folder to upload_folder
@@ -182,9 +186,9 @@ def main():
     rng_com_port = find_rng()      
     if rng_com_port != None:        
         ser = start_serial(rng_com_port)
-        trng3_cap(sample_value, interval_value, ser, temp_folder, duration)
+        trng3_cap(sample_value, interval_value, ser, temp_folder, sample_duration)
     else:
-        pseudo_cap(sample_value, interval_value, temp_folder, duration)
+        pseudo_cap(sample_value, interval_value, temp_folder, sample_duration)
 
 if __name__ == "__main__":
     print("\n", f"#" * 29, "\n")
