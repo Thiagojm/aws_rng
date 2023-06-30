@@ -1,4 +1,4 @@
-To make the raspberry autostart the processes:
+To make the raspberry autostart the two processes, one to collect the data and another to send to AWS S3:
 
 mkdir /home/pi/.config/autostart
 nano /home/pi/.config/autostart/rng.desktop
@@ -9,7 +9,7 @@ Type=Application
 Name=RNG
 Exec=xterm -hold -e '/usr/bin/python3 /home/pi/Desktop/aws_rng/rng_collect.py'
 
-then
+then the second process:
 
 nano /home/pi/.config/autostart/send.desktop
 
@@ -19,7 +19,7 @@ Type=Application
 Name=SEND
 Exec=xterm -hold -e '/usr/bin/python3 /home/pi/Desktop/aws_rng/send_aws.py'
 
-reboot
+sudo reboot
 
 #####################
 
