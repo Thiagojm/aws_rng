@@ -1,3 +1,4 @@
+
 Step 1: Install the NTP package
 
 The first step in syncing the time from the network is to install the NTP package. This can be done using the apt-get command in the terminal. To install NTP, open the terminal and enter the following command:
