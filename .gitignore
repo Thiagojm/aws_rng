@@ -2,3 +2,4 @@
 /temp_files
 /waiting_upload
 /__pycache__
+.variables.env
