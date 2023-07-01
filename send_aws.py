@@ -4,7 +4,7 @@ import os, time
 from dotenv import dotenv_values
 
 # Load parameters from .env file
-env_vars = dotenv_values('variables.env')
+env_vars = dotenv_values('./vars/variables.env')
 
 # Configuração das credenciais da AWS
 access_key = env_vars['ACCESS_KEY']

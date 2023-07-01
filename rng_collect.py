@@ -13,7 +13,7 @@ from bitstring import BitArray
 from dotenv import dotenv_values
 
 # Load parameters from .env file
-env_vars = dotenv_values('variables.env')
+env_vars = dotenv_values('./vars/variables.env')
 
 # Parameters
 sample_value = int(env_vars['SAMPLE_VALUE'])
