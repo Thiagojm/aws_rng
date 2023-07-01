@@ -1,0 +1,4 @@
+Deletando "send_aws.py" do histórico do git
+
+git filter-branch -f --index-filter 'git rm --cached --ignore-unmatch send_aws.py'
+git push --force origin main
