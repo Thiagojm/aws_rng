@@ -149,21 +149,29 @@ def main():
         return
 
     start_time = time.time()
+    print(f"Starting capture...\n")
+    num_loop = 1
+    total_bytes = 0
     while True:
         current_time = time.time()
         if current_time - start_time >= sample_duration:
+            num_loop = 1
+            total_bytes = 0
             filename_base = move_files_and_update_filename(temp_folder, upload_folder, pi_serial, num_bits, interval)
             start_time = current_time  # reset the start time
-
+        
         rng.flushInput()
         bits = read_bits(num_bits // 8, rng)
         count = count_ones(bits)
-
+        
         # Write data to files in TEMP_FOLDER
         write_to_csv(count, os.path.join(temp_folder, filename_base + '.csv'))
         write_to_bin(bits, os.path.join(temp_folder, filename_base + '.bin'))
 
         # Sleep for the remaining time
+        total_bytes += num_bits / 8    
+        print(f"Collecting data - Loop: {num_loop} - Total bytes collected: {int(total_bytes)}")
+        num_loop += 1
         time.sleep(max(interval - (time.time() - current_time), 0))
 
 
