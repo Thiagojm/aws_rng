@@ -35,7 +35,6 @@ def find_rng():
 
     print("Searching for RNG device...\n")
     for temp in ports_avaiable:
-    #   print(temp[1] + ' : ' + temp[2])
         if '04D8:F5FE' in temp[2]:
             print(f'Found TrueRNG on {temp[0]} \n')
             if rng_com_port == None:        # always chooses the 1st TrueRNG found
@@ -76,8 +75,8 @@ def start_serial(rng_com_port):
 
 def pseudo_cap(sample_value, interval_value, temp_folder, sample_duration):
     blocksize = int(sample_value / 8)
-    file_name = time.strftime(
-        f"%Y%m%d-%H%M%S_pseudo_s{sample_value}_i{interval_value}")
+    file_name = strftime(
+        f"%Y%m%dT%H%M%S_pseudo_s{sample_value}_i{interval_value}")
     file_path = os.path.abspath(os.path.dirname(__file__))
     file_name = f"{file_path}/{temp_folder}/{file_name}"
     num_loop = 1
@@ -105,7 +104,7 @@ def pseudo_cap(sample_value, interval_value, temp_folder, sample_duration):
             # open file and append time and number of ones
             with open(file_name + '.csv', "a+") as write_file:
                 write_file.write(
-                    f'{strftime("%H:%M:%S", localtime())} {num_ones_array}\n')
+                    f'{strftime("%Y-%m-%dT%H:%M:%S", localtime())} {num_ones_array}\n')
             end_cap = time.time()
             num_loop += 1
             # print(interval_value - (end_cap - start_cap))
@@ -122,8 +121,8 @@ def pseudo_cap(sample_value, interval_value, temp_folder, sample_duration):
 
 def trng3_cap(sample_value, interval_value, ser, temp_folder, sample_duration):
     blocksize = int(sample_value / 8)
-    file_name = time.strftime(
-        f"%Y%m%d-%H%M%S_trng_s{sample_value}_i{interval_value}")
+    file_name = strftime(
+        f"%Y%m%dT%H%M%S_trng_s{sample_value}_i{interval_value}")
     file_path = os.path.abspath(os.path.dirname(__file__))
     file_name = f"{file_path}/{temp_folder}/{file_name}"
     num_loop = 1
@@ -151,7 +150,7 @@ def trng3_cap(sample_value, interval_value, ser, temp_folder, sample_duration):
             # open file and append time and number of ones
             with open(file_name + '.csv', "a+") as write_file:
                 write_file.write(
-                    f'{strftime("%H:%M:%S", localtime())} {num_ones_array}\n')
+                    f'{strftime("%Y-%m-%dT%H:%M:%S", localtime())} {num_ones_array}\n')
             end_cap = time.time()
             num_loop += 1
             try:
