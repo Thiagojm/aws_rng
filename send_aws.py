@@ -23,21 +23,6 @@ upload_folder = env_vars['UPLOAD_FOLDER']
 # Nome do bucket S3
 bucket_name = env_vars['BUCKET_NAME']
 
-# Get Rasp ID
-def getserial():
-  # Extract serial from cpuinfo file
-  cpuserial = "0000000000000000"
-  try:
-    f = open('/proc/cpuinfo','r')
-    for line in f:
-      if line[0:6]=='Serial':
-        cpuserial = line[10:26]
-    f.close()
-  except:
-    cpuserial = "ERROR000000000"
-
-  return cpuserial
-
 # Loop para fazer o upload de cada arquivo
 def upload_arquivo(upload_folder):
     for arquivo in os.listdir(upload_folder):
@@ -79,5 +64,4 @@ def main(wait_for_upload):
         time.sleep(wait_for_upload)
     
 if __name__ == "__main__":
-    rasp_id = getserial()
     main(wait_for_upload)

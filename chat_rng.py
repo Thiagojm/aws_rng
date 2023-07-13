@@ -110,7 +110,7 @@ def check_and_create_folders(temp_folder, upload_folder):
         os.makedirs(upload_folder)
 
 
-def get_rng_and_filename(pi_serial, num_bits, interval):
+def get_rng_and_filename(num_bits, interval):
     rng_com_port = find_rng()
     if rng_com_port is None:
         print('No RNG device found. Exiting.')
@@ -123,7 +123,7 @@ def get_rng_and_filename(pi_serial, num_bits, interval):
     formatted_now = now.strftime("%Y%m%dT%H%M%S")
 
     # Create base filename with pi serial and current datetime
-    filename_base = f'{pi_serial}_{formatted_now}_trng_s{num_bits}_i{interval}'  # 'pi_serial_2023-07-12T16:35:12_trng_s1000000_i0.1
+    filename_base = f'{formatted_now}_trng_s{num_bits}_i{interval}'  # 'pi_serial_2023-07-12T16:35:12_trng_s1000000_i0.1
 
     return rng, filename_base
 
@@ -134,7 +134,7 @@ def move_files_and_update_filename(temp_folder, upload_folder, pi_serial, num_bi
 
     now = datetime.now()
     formatted_now = now.strftime("%Y%m%dT%H%M%S")
-    filename_base = f'{pi_serial}_{formatted_now}_trng_s{num_bits}_i{interval}'
+    filename_base = f'{formatted_now}_trng_s{num_bits}_i{interval}'
     return filename_base
 
 
@@ -143,7 +143,7 @@ def main():
     num_bits, interval, sample_duration, temp_folder, upload_folder = load_environment_variables()
     check_and_create_folders(temp_folder, upload_folder)
 
-    rng, filename_base = get_rng_and_filename(pi_serial, num_bits, interval)
+    rng, filename_base = get_rng_and_filename(num_bits, interval)
 
     if rng is None:
         return
@@ -157,7 +157,7 @@ def main():
         if current_time - start_time >= sample_duration:
             num_loop = 1
             total_bytes = 0
-            filename_base = move_files_and_update_filename(temp_folder, upload_folder, pi_serial, num_bits, interval)
+            filename_base = move_files_and_update_filename(temp_folder, upload_folder, num_bits, interval)
             start_time = current_time  # reset the start time
         
         rng.flushInput()
