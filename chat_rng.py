@@ -78,19 +78,6 @@ def write_to_bin(bits, filename):
     with open(filename, 'ab') as file:
         file.write(bits)
 
-def get_pi_serial():
-    # Extract serial from cpuinfo file
-    cpuserial = "0000000000000000"
-    try:
-        f = open('/proc/cpuinfo','r')
-        for line in f:
-            if line[0:6] == 'Serial':
-                cpuserial = line.split(":")[1].strip()
-        f.close()
-    except:
-        cpuserial = "ERROR000000000"
-    
-    return cpuserial
 
 def load_environment_variables():
     load_dotenv('vars/variables.env')
@@ -128,7 +115,7 @@ def get_rng_and_filename(num_bits, interval):
     return rng, filename_base
 
 
-def move_files_and_update_filename(temp_folder, upload_folder, pi_serial, num_bits, interval):
+def move_files_and_update_filename(temp_folder, upload_folder, num_bits, interval):
     for file_name in os.listdir(temp_folder):
         shutil.move(os.path.join(temp_folder, file_name), upload_folder)
 
@@ -139,7 +126,6 @@ def move_files_and_update_filename(temp_folder, upload_folder, pi_serial, num_bi
 
 
 def main():
-    pi_serial = get_pi_serial()
     num_bits, interval, sample_duration, temp_folder, upload_folder = load_environment_variables()
     check_and_create_folders(temp_folder, upload_folder)
 
