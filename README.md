@@ -24,7 +24,8 @@ The project also includes a variables.env file, which holds environment variable
 ## Setup
 
 1. Install the required packages if they are not already installed: 
-> pip install bitstring python-dotenv pyserial requests ntplib pytz
+>
+    pip install bitstring python-dotenv pyserial requests ntplib pytz
 
 2. In the `vars` folder, rename the `variables.env.default` to `variables.env` and edit to specify the sample size (in bits), the interval between samples, the duration for each data collection cycle, and the paths for the temporary and upload folders. Also give your raspberry a unique ID name, use your AWS keys and bucket name. 
 
@@ -33,13 +34,15 @@ The project also includes a variables.env file, which holds environment variable
 Clone the repository or copy the scripts to your Raspberry Pi.
 Give execute permissions to the scripts:
 
->chmod +x /path/to/start_rng.py  
->chmod +x /path/to/rng_collect.py  
->chmod +x /path/to/send_aws.py
+>
+    chmod +x /path/to/start_rng.py  
+    chmod +x /path/to/rng_collect.py  
+    chmod +x /path/to/send_aws.py
 
 Create an autostart entry:
 
-> nano /home/pi/.config/autostart/start_rng.desktop
+> 
+    nano /home/pi/.config/autostart/start_rng.desktop
 
 Insert the following content into the .desktop file:
 
@@ -52,7 +55,8 @@ Insert the following content into the .desktop file:
 Save and exit the file.  
 Make the .desktop file executable:
 
->chmod +x /home/pi/.config/autostart/start_rng.desktop
+>
+    chmod +x /home/pi/.config/autostart/start_rng.desktop
 
 ## Usage
 
