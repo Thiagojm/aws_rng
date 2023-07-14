@@ -1,4 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=RNG_START
-Exec=cd /home/pi/Desktop/aws_rng/ && ./raspi_start.sh
