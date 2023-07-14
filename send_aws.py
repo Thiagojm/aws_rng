@@ -4,6 +4,10 @@ import boto3
 from dotenv import load_dotenv
 from botocore.exceptions import NoCredentialsError
 
+# change to script directory
+script_path = os.path.dirname(os.path.realpath(__file__))
+os.chdir(script_path)
+
 # Load variables from .env in 'vars' directory
 load_dotenv('vars/variables.env')
 

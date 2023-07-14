@@ -9,6 +9,10 @@ import os
 import shutil
 from dotenv import load_dotenv
 
+# change to script directory
+script_path = os.path.dirname(os.path.realpath(__file__))
+os.chdir(script_path)
+
 def find_rng():
     rng_com_port = None
 
