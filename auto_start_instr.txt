@@ -5,16 +5,16 @@ mkdir -p /home/pi/.config/autostart
 
 Create a new .desktop file in the autostart directory. You can use any text editor you like, but in this case, we'll use nano.
 
-nano /home/pi/.config/autostart/rng_start.desktop
+nano /home/pi/.config/autostart/start_rng.desktop
 
-Paste the following content into the file, replacing /home/pi/Desktop/aws_rng/your_script.py with the path to your Python script:
+Paste the following content into the file, replacing /home/pi/Desktop/aws_rng/start_rng.py with the path to your Python script:
 
 plaintext
 
 [Desktop Entry]
 Type=Application
 Name=RngStart
-Exec=/usr/bin/lxterminal -e "python3 /home/pi/Desktop/aws_rng/your_script.py; bash"
+Exec=/usr/bin/lxterminal -e "python3 /home/pi/Desktop/aws_rng/start_rng.py.py; bash"
 
 Save the file and exit the editor. If you're using nano, you can do this by pressing Ctrl+X, then Y, then Enter.
 
