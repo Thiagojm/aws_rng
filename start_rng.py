@@ -25,8 +25,8 @@ def check_and_update_time():
 
 def launch_scripts():
     # Opening scripts in new terminal windows
-    subprocess.Popen(['lxterminal', '-e', 'python3 rng_collect.py; bash'])
-    subprocess.Popen(['lxterminal', '-e', 'python3 send_aws.py; bash'])
+    subprocess.Popen(['lxterminal', '-e', 'python3 rng_collect.py'])
+    subprocess.Popen(['lxterminal', '-e', 'python3 send_aws.py'])
 
 def main():
     while True:
