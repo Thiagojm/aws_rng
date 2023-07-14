@@ -1,31 +1,13 @@
-# Default imports
-import time
-from time import localtime, strftime
-import os
+import csv
+import datetime
 import serial
+import time
 from serial.tools import list_ports
-import secrets
-
-
-# External imports
-
 from bitstring import BitArray
-from dotenv import dotenv_values
-
-# Load parameters from .env file
-env_vars = dotenv_values('./vars/variables.env')
-
-# Parameters
-sample_value = int(env_vars['SAMPLE_VALUE'])
-interval_value = int(env_vars['INTERVAL_VALUE'])
-# Set the sample duration in seconds (15 minutes = 900 seconds)
-sample_duration = int(env_vars['SAMPLE_DURATION'])
-
-
-# Folders
-temp_folder = env_vars['TEMP_FOLDER']
-upload_folder = env_vars['UPLOAD_FOLDER']
-
+from datetime import datetime
+import os
+import shutil
+from dotenv import load_dotenv
 
 def find_rng():
     rng_com_port = None
@@ -52,13 +34,7 @@ def find_rng():
         
     return rng_com_port
 
-
-def start_serial(rng_com_port):
-    print('==================================================\n')
-
-    # Print which port we're using
-    print(f'Using com port:  ' + str(rng_com_port), "\n")
-
+def setup_serial(rng_com_port):
     # Try to setup and open the comport
     ser = serial.Serial(port=rng_com_port, timeout=10)  # timeout set at 10 seconds in case the read fails
             
@@ -71,125 +47,122 @@ def start_serial(rng_com_port):
 
     # This clears the receive buffer so we aren't using buffered data
     ser.flushInput()
+
     return ser
 
-def pseudo_cap(sample_value, interval_value, temp_folder, sample_duration):
-    blocksize = int(sample_value / 8)
-    file_name = strftime(
-        f"%Y%m%dT%H%M%S_pseudo_s{sample_value}_i{interval_value}")
-    file_path = os.path.abspath(os.path.dirname(__file__))
-    file_name = f"{file_path}/{temp_folder}/{file_name}"
-    num_loop = 1
-    total_bytes = 0
-    print(f"Starting capture:\n")
-    print(f"Saving to file {file_name}\n")
-    try:
-        # Get the current time
-        start_time = time.time()
-        while (time.time() - start_time) < sample_duration:
-            total_bytes += blocksize
-            print(f"Collecting data - Loop: {num_loop} - Total bytes collected: {total_bytes}")            
-            start_cap = time.time()
-            with open(file_name + '.bin', "ab") as bin_file:  # save binary file
-                try:
-                    x = secrets.token_bytes(blocksize)  # read bytes from serial port
-                except Exception:
-                    print("Error reading from serial port")
-                    break
-                bin_file.write(x)
-            bin_hex = BitArray(x)  # bin to hex
-            bin_ascii = bin_hex.bin  # hex to ASCII
-            # count numbers of ones in the string
-            num_ones_array = bin_ascii.count('1')
-            # open file and append time and number of ones
-            with open(file_name + '.csv', "a+") as write_file:
-                write_file.write(
-                    f'{strftime("%Y-%m-%dT%H:%M:%S", localtime())} {num_ones_array}\n')
-            end_cap = time.time()
-            num_loop += 1
-            # print(interval_value - (end_cap - start_cap))
-            try:
-                time.sleep(interval_value - (end_cap - start_cap))
-            except Exception:
-                pass
-    except KeyboardInterrupt:
-        print(f"Capture stopped by user, closing and exiting...")
-        print(f"Total bytes collected: {total_bytes}, saved to {file_name}")
-        return
-    copy_to_upload_folder(upload_folder)
-    pseudo_cap(sample_value, interval_value, temp_folder, sample_duration)
+def read_bits(num_bytes, rng):
+    # Read the specified number of bytes
+    bits = rng.read(num_bytes)
 
-def trng3_cap(sample_value, interval_value, ser, temp_folder, sample_duration):
-    blocksize = int(sample_value / 8)
-    file_name = strftime(
-        f"%Y%m%dT%H%M%S_trng_s{sample_value}_i{interval_value}")
-    file_path = os.path.abspath(os.path.dirname(__file__))
-    file_name = f"{file_path}/{temp_folder}/{file_name}"
-    num_loop = 1
-    total_bytes = 0
-    print(f"Starting capture:\n")
-    print(f"Saving to file {file_name}\n")
-    try:
-        # Get the current time
-        start_time = time.time()
-        while (time.time() - start_time) < sample_duration:
-            total_bytes += blocksize
-            print(f"Collecting data - Loop: {num_loop} - Total bytes collected: {total_bytes}")            
-            start_cap = time.time()
-            with open(file_name + '.bin', "ab") as bin_file:  # save binary file
-                try:
-                    x = ser.read(blocksize)  # read bytes from serial port
-                except Exception:
-                    print("Error reading from serial port")
-                    break
-                bin_file.write(x)  # write bytes to binary file
-            bin_hex = BitArray(x)  # bin to hex
-            bin_ascii = bin_hex.bin  # hex to ASCII
-            # count numbers of ones in the string
-            num_ones_array = bin_ascii.count('1')
-            # open file and append time and number of ones
-            with open(file_name + '.csv', "a+") as write_file:
-                write_file.write(
-                    f'{strftime("%Y-%m-%dT%H:%M:%S", localtime())} {num_ones_array}\n')
-            end_cap = time.time()
-            num_loop += 1
-            try:
-                time.sleep(interval_value - (end_cap - start_cap))
-            except Exception:
-                pass
-    except KeyboardInterrupt:
-        ser.close()
-        if os.name == 'posix':
-            os.system('stty -F '+rng_com_port+' min 1')
-        print(f"Capture stopped by user, closing serial port and exiting...")
-        print(f"Total bytes collected: {total_bytes}, saved to {file_name}")
-        return
-    copy_to_upload_folder(upload_folder)
-    trng3_cap(sample_value, interval_value, ser, temp_folder, sample_duration)
-    
-    
-#copy all files from temp_folder to upload_folder
-def copy_to_upload_folder(upload_folder):
-    for file in os.listdir(temp_folder):
-        try:
-            os.rename(f"{temp_folder}/{file}", f"{upload_folder}/{file}")
-            print(f"File {file} copied to {upload_folder}")
-        except Exception as e:
-            print(f"Error copying file {file}: {e}")   
-    
+    return bits
+
+def count_ones(bits):
+    bit_array = BitArray(bytes=bits)
+    return bit_array.count('0b1')
+
+def write_to_csv(count, filename):
+    now = datetime.now()
+
+    # Format datetime to look like "2023-07-12T16:35:12"
+    formatted_now = now.strftime("%Y%m%dT%H:%M:%S")
+
+    # Open the CSV file in append mode
+    with open(filename, 'a', newline='') as file:
+        writer = csv.writer(file)
+
+        # Write the current datetime and the count of ones
+        writer.writerow([formatted_now, count])
+
+def write_to_bin(bits, filename):
+    # Open the binary file in append mode
+    with open(filename, 'ab') as file:
+        file.write(bits)
+
+
+def load_environment_variables():
+    load_dotenv('vars/variables.env')
+    num_bits = int(os.getenv('SAMPLE_VALUE'))  # in bits
+    interval = int(os.getenv('INTERVAL_VALUE'))  # interval in seconds
+    sample_duration = int(os.getenv('SAMPLE_DURATION'))  # duration in seconds
+    temp_folder = os.getenv('TEMP_FOLDER')
+    upload_folder = os.getenv('UPLOAD_FOLDER')
+    return num_bits, interval, sample_duration, temp_folder, upload_folder
+
+
+def check_and_create_folders(temp_folder, upload_folder):
+    if not os.path.exists(temp_folder):
+        os.makedirs(temp_folder)
+
+    if not os.path.exists(upload_folder):
+        os.makedirs(upload_folder)
+
+
+def get_rng_and_filename(num_bits, interval):
+    rng_com_port = find_rng()
+    if rng_com_port is None:
+        print('No RNG device found. Exiting.')
+        return None, None
+
+    rng = setup_serial(rng_com_port)
+
+    # Get current datetime and format it
+    now = datetime.now()
+    formatted_now = now.strftime("%Y%m%dT%H%M%S")
+
+    # Create base filename with pi serial and current datetime
+    filename_base = f'{formatted_now}_trng_s{num_bits}_i{interval}'  # 'pi_serial_2023-07-12T16:35:12_trng_s1000000_i0.1
+
+    return rng, filename_base
+
+
+def move_files_and_update_filename(temp_folder, upload_folder, num_bits, interval):
+    for file_name in os.listdir(temp_folder):
+        shutil.move(os.path.join(temp_folder, file_name), upload_folder)
+
+    now = datetime.now()
+    formatted_now = now.strftime("%Y%m%dT%H%M%S")
+    filename_base = f'{formatted_now}_trng_s{num_bits}_i{interval}'
+    return filename_base
+
 
 def main():
-    copy_to_upload_folder(upload_folder)
-    rng_com_port = find_rng()      
-    if rng_com_port != None:        
-        ser = start_serial(rng_com_port)
-        trng3_cap(sample_value, interval_value, ser, temp_folder, sample_duration)
-    else:
-        pseudo_cap(sample_value, interval_value, temp_folder, sample_duration)
+    num_bits, interval, sample_duration, temp_folder, upload_folder = load_environment_variables()
+    check_and_create_folders(temp_folder, upload_folder)
 
-if __name__ == "__main__":
-    print("\n", f"#" * 29, "\n")
-    print(f"Hello, Welcome to the rng_aws - ver 0.1 - by Thiago Jung")
-    print("\n", f"#" * 29, "\n")
+    rng, filename_base = get_rng_and_filename(num_bits, interval)
+
+    if rng is None:
+        return
+
+    start_time = time.time()
+    print(f"Starting capture...\n")
+    num_loop = 1
+    total_bytes = 0
+    while True:
+        current_time = time.time()
+        if current_time - start_time >= sample_duration:
+            num_loop = 1
+            total_bytes = 0
+            filename_base = move_files_and_update_filename(temp_folder, upload_folder, num_bits, interval)
+            start_time = current_time  # reset the start time
+        
+        rng.flushInput()
+        bits = read_bits(num_bits // 8, rng)
+        count = count_ones(bits)
+        
+        # Write data to files in TEMP_FOLDER
+        write_to_csv(count, os.path.join(temp_folder, filename_base + '.csv'))
+        write_to_bin(bits, os.path.join(temp_folder, filename_base + '.bin'))
+
+        # Sleep for the remaining time
+        total_bytes += num_bits / 8    
+        print(f"Collecting data - Loop: {num_loop} - Total bytes collected: {int(total_bytes)}")
+        num_loop += 1
+        time.sleep(max(interval - (time.time() - current_time), 0))
+
+
+
+# Run the main function
+if __name__ == '__main__':
     main()
-    
+
