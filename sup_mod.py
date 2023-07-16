@@ -48,12 +48,11 @@ def check_bitb():
         return True
 
 # Loop for bitbbabler
-def collect_bitb(temp_folder, upload_folder, filename_base, num_bits, interval, sample_duration, fold):
+def collect_bitb(device, temp_folder, upload_folder, filename_base, num_bits, interval, sample_duration, fold):
     start_time = time.time()
     print(f"Starting capture...\n")
     num_loop = 1
     total_bytes = 0
-    device = 'bitb'
     try:
         while True:
             current_time = time.time()
@@ -139,12 +138,11 @@ def read_bits(num_bytes, rng):
 
     return bits
 
-def collect_trng(temp_folder, upload_folder, filename_base, num_bits, interval, sample_duration, rng):
+def collect_trng(device, temp_folder, upload_folder, filename_base, num_bits, interval, sample_duration, rng):
     start_time = time.time()
     print(f"Starting capture...\n")
     num_loop = 1
     total_bytes = 0
-    device = "trng"
     while True:
         try:
             current_time = time.time()

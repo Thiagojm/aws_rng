@@ -1,13 +1,4 @@
-import csv
-import subprocess
-import serial
-import time
-from serial.tools import list_ports
-from bitstring import BitArray
-from datetime import datetime
 import os
-import shutil
-from dotenv import load_dotenv
 import sup_mod as sm
 
 # change to script directory
@@ -28,13 +19,13 @@ def main():
         print('Using bitbbabler as RNG device.')
         device = 'bitb'
         filename_base = sm.get_filename(num_bits, interval, device, fold)
-        sm.collect_bitb(temp_folder, upload_folder, filename_base, num_bits, interval, sample_duration, fold)
+        sm.collect_bitb(device, temp_folder, upload_folder, filename_base, num_bits, interval, sample_duration, fold)
     else:
         print('Using TrueRNG as RNG device.')
         device = 'trng'
         filename_base = sm.get_filename(num_bits, interval, device, fold)
         rng = sm.setup_serial(chk_trng)
-        sm.collect_trng(temp_folder, upload_folder, filename_base, num_bits, interval, sample_duration, rng)
+        sm.collect_trng(device, temp_folder, upload_folder, filename_base, num_bits, interval, sample_duration, rng)
 
 
 # Run the main function
