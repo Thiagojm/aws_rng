@@ -100,8 +100,13 @@ def full_install():
         'Name=StartRng\n'
         'Exec=/usr/bin/lxterminal -e "python3 /home/pi/Desktop/aws_rng/start_rng.py; bash"'
     )
-    desktop_entry_path = "/home/pi/.config/autostart/start_rng.desktop"
+    desktop_entry_dir = "/home/pi/.config/autostart"
+    desktop_entry_path = f"{desktop_entry_dir}/start_rng.desktop"
     try:
+        # Check if the directory exists, if not, create it
+        if not os.path.isdir(desktop_entry_dir):
+            os.makedirs(desktop_entry_dir)
+
         # Use 'sudo' to create and write to the file
         subprocess.check_call(["sudo", "bash", "-c", f"echo '{desktop_entry_content}' > {desktop_entry_path}"])
         subprocess.check_call(["sudo", "chmod", "+x", desktop_entry_path])
