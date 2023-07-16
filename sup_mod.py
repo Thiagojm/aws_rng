@@ -63,7 +63,7 @@ def collect_bitb(device, temp_folder, upload_folder, filename_base, num_bits, in
                 start_time = current_time  # reset the start time       
             
             # the command to run
-            command = f"seedd.exe --limit-max-xfer --no-qa -f{fold} -b {(num_bits // 8)}"
+            command = f"seedd --limit-max-xfer --no-qa -f{fold} -b {(num_bits // 8)}"
 
             # create the process
             process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
