@@ -58,8 +58,34 @@ def full_install():
         print("Failed to install Python packages.")
         return
 
+    # Install the device
+    device_file_path = os.path.expanduser("~/Desktop/aws_rng/bitbabbler_setup/bit-babbler_0.8_arm64.deb")
+    try:
+        subprocess.check_call(["sudo", "dpkg", "-i", device_file_path])
+        print("Device installed successfully.")
+    except subprocess.CalledProcessError:
+        print("Failed to install the device.")
+        return
+
+    # Create the UDEV rule
+    udev_rule = (
+        '# Voicetronics BitBabbler Black and White\n'
+        'SUBSYSTEM=="usb", ACTION=="add|change", ATTRS{idVendor}=="0403", '
+        'ATTRS{idProduct}=="7840", SYMLINK="BitBabbler", MODE="0666"'
+    )
+    udev_rule_path = "/etc/udev/rules.d/99-BitBabbler.rules"
+    try:
+        with open(udev_rule_path, 'w') as f:
+            f.write(udev_rule)
+        subprocess.check_call(["sudo", "udevadm", "control", "--reload-rules"])
+        print("UDEV rule created successfully.")
+    except Exception as e:
+        print(f"Failed to create the UDEV rule: {e}")
+        return
+
     # Create variables.env file from template
     create_env_file()
+
 
     
 def main():
