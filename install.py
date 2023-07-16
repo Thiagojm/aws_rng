@@ -21,6 +21,9 @@ def change_env_file():
             key, default_value_comment = line.split("=", 1)
             key = key.strip()
 
+            # Remove the existing comment
+            default_value_comment = default_value_comment.split("#")[0].strip()
+
             if "#" in default_value_comment:
                 default_value, comment = default_value_comment.split("#", 1)
                 default_value = default_value.strip()
