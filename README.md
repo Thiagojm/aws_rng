@@ -1,6 +1,6 @@
 # True Random Number Generator (TRNG) Data Collector
 
-This Python application is designed for a Raspberry Pi with a TRNG device (TrueRNG, TrueRNGpro, or TrueRNGoroV2). It reads in a number of bits from the TRNG at a user-specified interval and counts the number of 'ones'. The datetime and count are then stored in a .csv file and the bits collected are appended to a .bin file for control.
+This Python application is designed for a Raspberry Pi with a TRNG device (TrueRNG, TrueRNGpro, or TrueRNGoroV2) or Bitbbabler. It reads in a number of bits from the TRNG at a user-specified interval and counts the number of 'ones'. The datetime and count are then stored in a .csv file and the bits collected are appended to a .bin file for control.
 
 The project consists of three main scripts:
 
@@ -15,7 +15,7 @@ The project also includes a variables.env file, which holds environment variable
 ## Requirements
 
 - Raspberry Pi with Python3 installed
-- A TRNG device (TrueRNG)
+- A TRNG device (TrueRNG) or Bitbbabler
 - Internet access
 - Python 3.x
 - lxterminal package installed (default in most Raspberry Pi distributions)
@@ -27,7 +27,19 @@ The project also includes a variables.env file, which holds environment variable
 >
     pip install bitstring python-dotenv pyserial requests ntplib pytz
 
-2. In the `vars` folder, rename the `variables.env.default` to `variables.env` and edit to specify the sample size (in bits), the interval between samples, the duration for each data collection cycle, and the paths for the temporary and upload folders. Also give your raspberry a unique ID name, use your AWS keys and bucket name. 
+2. In the `vars` folder, rename the `variables.env.default` to `variables.env` and edit to specify the sample size (in bits), the interval between samples, the duration for each data collection cycle, and the paths for the temporary and upload folders. Also give your raspberry a unique ID name, use your AWS keys and bucket name.
+
+3. To install Bitbbabler:
+> 
+    Double click the bit-babbler_0.8_arm64.deb in the Install folder, to install it.
+
+    In the terminal:
+    sudo nano /etc/udev/rules.d/99-BitBabbler.rules
+
+    Copy this inside this file and save: 
+
+    # Voicetronics BitBabbler Black and White
+    SUBSYSTEM=="usb", ACTION=="add|change", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="7840", SYMLINK="BitBabbler", MODE="0666"
 
 ## Installation
 
@@ -44,7 +56,7 @@ Create an autostart entry:
 > 
     nano /home/pi/.config/autostart/start_rng.desktop
 
-Insert the following content into the .desktop file:
+Insert the following content into the .desktop file, changing the path to the path of your script:
 
 >
     [Desktop Entry]
