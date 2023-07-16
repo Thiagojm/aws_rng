@@ -75,6 +75,26 @@ def full_install():
     )
     udev_rule_path = "/etc/udev/rules.d/99-BitBabbler.rules"
     try:
+        # Use 'sudo' to create and write to the file
+        subprocess.check_call(["sudo", "bash", "-c", f"echo '{udev_rule}' > {udev_rule_path}"])
+        subprocess.check_call(["sudo", "udevadm", "control", "--reload-rules"])
+        print("UDEV rule created successfully.")
+    except Exception as e:
+        print(f"Failed to create the UDEV rule: {e}")
+        return
+
+    # Create variables.env file from template
+    create_env_file()
+
+
+    # Create the UDEV rule
+    udev_rule = (
+        '# Voicetronics BitBabbler Black and White\n'
+        'SUBSYSTEM=="usb", ACTION=="add|change", ATTRS{idVendor}=="0403", '
+        'ATTRS{idProduct}=="7840", SYMLINK="BitBabbler", MODE="0666"'
+    )
+    udev_rule_path = "/etc/udev/rules.d/99-BitBabbler.rules"
+    try:
         with open(udev_rule_path, 'w') as f:
             f.write(udev_rule)
         subprocess.check_call(["sudo", "udevadm", "control", "--reload-rules"])
