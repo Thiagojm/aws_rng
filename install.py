@@ -2,6 +2,7 @@ import os
 import subprocess
 
 
+
 def change_env_file():
     default_file_path = os.path.expanduser("~/Desktop/aws_rng/vars/variables.env.default")
     target_file_path = os.path.expanduser("~/Desktop/aws_rng/vars/variables.env")
@@ -20,9 +21,6 @@ def change_env_file():
             # Extract key, default value, and comment from line
             key, default_value_comment = line.split("=", 1)
             key = key.strip()
-
-            # Remove the existing comment
-            default_value_comment = default_value_comment.split("#")[0].strip()
 
             if "#" in default_value_comment:
                 default_value, comment = default_value_comment.split("#", 1)
