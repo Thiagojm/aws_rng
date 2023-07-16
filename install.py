@@ -49,7 +49,7 @@ def full_install():
     print("Starting Full Install...")
 
     # Install Python packages
-    packages = ["bitstring", "python-dotenv", "pyserial", "requests", "ntplib", "pytz", "boto3"]
+    packages = ["bitstring", "python-dotenv", "pyserial", "requests", "ntplib", "pytz", "boto3", "ntplib"]
     try:
         subprocess.check_call(["pip3", "install"] + packages)
         print("Python packages installed successfully.")

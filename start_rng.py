@@ -20,7 +20,7 @@ def check_and_update_time():
     response = client.request('pool.ntp.org')
     current_time = datetime.fromtimestamp(response.tx_time, pytz.timezone('America/Sao_Paulo'))
     date_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
-    os.system(f'date -s "{date_time}"')
+    os.system(f'sudo date -s "{date_time}"')
     print('System time updated')
 
 def launch_scripts():
