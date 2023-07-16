@@ -1,6 +1,57 @@
 import os
 import subprocess
 
+
+def change_env_file():
+    template_file_path = os.path.expanduser("~/Desktop/aws_rng/vars/variables.env.default")
+    target_file_path = os.path.expanduser("~/Desktop/aws_rng/vars/variables.env")
+
+    # Read existing values from variables.env file
+    existing_values = {}
+    if os.path.exists(target_file_path):
+        with open(target_file_path, "r") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                key, value = line.split("=", 1)
+                existing_values[key.strip()] = value.strip()
+
+    # Use the default file as a template
+    with open(template_file_path, "r") as template_file, open(target_file_path, "w") as target_file:
+        for line in template_file:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                target_file.write(line + "\n")
+                continue
+
+            # Extract key, default value and comment from line
+            key, default_value_comment = line.split("=", 1)
+            key = key.strip()
+
+            if "#" in default_value_comment:
+                default_value, comment = default_value_comment.split("#", 1)
+                default_value = default_value.strip()
+                comment = comment.strip()
+            else:
+                default_value = default_value_comment.strip()
+                comment = ""
+
+            # If key is already in the existing values, use that as the default
+            if key in existing_values:
+                default_value = existing_values[key]
+
+            # Prompt user for new value
+            new_value = input(f"{comment} [{default_value}]: ").strip()
+            if new_value == "":
+                new_value = default_value
+
+            # Write new value to target file
+            target_file.write(f"{key}={new_value}  # {comment}\n")
+
+    print("variables.env file updated successfully.")
+
+
 def create_env_file():
     # Path to the default file
     default_file_path = os.path.expanduser("~/Desktop/aws_rng/vars/variables.env.default")
@@ -149,8 +200,8 @@ def wifi_setup():
     print("Setting Up Wifi...")
 
 def change_install():
-    # Implement your change installation procedure here
-    print("Changing Install...")
+    change_env_file()
+
 
 if __name__ == "__main__":
     main()
