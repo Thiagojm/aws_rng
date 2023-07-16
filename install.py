@@ -72,7 +72,7 @@ def full_install():
         'SUBSYSTEM=="usb", ACTION=="add|change", ATTRS{idVendor}=="0403", '
         'ATTRS{idProduct}=="7840", SYMLINK="BitBabbler", MODE="0666"'
     )
-    udev_rule_path = "/etc/udev/rules.d/60-bit-babbler.rules"  # Modified rule file name
+    udev_rule_path = "/etc/udev/rules.d/60-bit-babbler.rules"
     try:
         # Use 'sudo' to create and write to the file
         subprocess.check_call(["sudo", "bash", "-c", f"echo '{udev_rule}' > {udev_rule_path}"])
@@ -82,8 +82,37 @@ def full_install():
         print(f"Failed to create the UDEV rule: {e}")
         return
 
+    # Make python scripts executable
+    scripts = ["start_rng.py", "rng_collect.py", "send_aws.py"]
+    for script in scripts:
+        script_path = os.path.expanduser(f"~/Desktop/aws_rng/{script}")
+        try:
+            subprocess.check_call(["chmod", "+x", script_path])
+            print(f"{script} made executable.")
+        except subprocess.CalledProcessError:
+            print(f"Failed to make {script} executable.")
+            return
+
+    # Create autostart entry
+    desktop_entry_content = (
+        '[Desktop Entry]\n'
+        'Type=Application\n'
+        'Name=StartRng\n'
+        'Exec=/usr/bin/lxterminal -e "python3 /home/pi/Desktop/aws_rng/start_rng.py; bash"'
+    )
+    desktop_entry_path = "/home/pi/.config/autostart/start_rng.desktop"
+    try:
+        # Use 'sudo' to create and write to the file
+        subprocess.check_call(["sudo", "bash", "-c", f"echo '{desktop_entry_content}' > {desktop_entry_path}"])
+        subprocess.check_call(["sudo", "chmod", "+x", desktop_entry_path])
+        print("Autostart entry created successfully.")
+    except Exception as e:
+        print(f"Failed to create autostart entry: {e}")
+        return
+
     # Create variables.env file from template
     create_env_file()
+
 
     
 def main():
