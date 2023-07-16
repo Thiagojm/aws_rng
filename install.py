@@ -3,21 +3,13 @@ import subprocess
 
 
 def change_env_file():
-    template_file_path = os.path.expanduser("~/Desktop/aws_rng/vars/variables.env.default")
+    default_file_path = os.path.expanduser("~/Desktop/aws_rng/vars/variables.env.default")
     target_file_path = os.path.expanduser("~/Desktop/aws_rng/vars/variables.env")
 
-    # Read existing values from variables.env file
-    existing_values = {}
-    if os.path.exists(target_file_path):
-        with open(target_file_path, "r") as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                key, value = line.split("=", 1)
-                existing_values[key.strip()] = value.strip()
+    # Use the existing variables.env file as a template, if it exists.
+    # If it does not exist, use the default template.
+    template_file_path = target_file_path if os.path.exists(target_file_path) else default_file_path
 
-    # Use the default file as a template
     with open(template_file_path, "r") as template_file, open(target_file_path, "w") as target_file:
         for line in template_file:
             line = line.strip()
@@ -25,7 +17,7 @@ def change_env_file():
                 target_file.write(line + "\n")
                 continue
 
-            # Extract key, default value and comment from line
+            # Extract key, default value, and comment from line
             key, default_value_comment = line.split("=", 1)
             key = key.strip()
 
@@ -37,10 +29,6 @@ def change_env_file():
                 default_value = default_value_comment.strip()
                 comment = ""
 
-            # If key is already in the existing values, use that as the default
-            if key in existing_values:
-                default_value = existing_values[key]
-
             # Prompt user for new value
             new_value = input(f"{key} ({comment}) [{default_value}]: ").strip()
             if new_value == "":
@@ -50,7 +38,6 @@ def change_env_file():
             target_file.write(f"{key}={new_value}  # {comment}\n")
 
     print("variables.env file updated successfully.")
-
 
 
 def create_env_file():
