@@ -2,7 +2,7 @@ Move the bit-babbler_0.8_arm64.deb file to the Raspberry Pi.
 Double click bit-babbler_0.8_arm64.deb to install the package.
 
 
-sudo nano /etc/udev/rules.d/99-BitBabbler.rules (could be 60-bit-babbler.rules)
+sudo nano /etc/udev/rules.d/60-bit-babbler.rules (could be 99-BitBabbler.rules)
 
 Write the following to the file:
 # Voicetronics BitBabbler Black and White
@@ -11,3 +11,5 @@ SUBSYSTEM=="usb", ACTION=="add|change", ATTRS{idVendor}=="0403", ATTRS{idProduct
 Save the file and exit the editor.
 
 seedd --limit-max-xfer --no-qa -f0 -b 256
+
+sudo nano /etc/udev/rules.d/60-bit-babbler.rules

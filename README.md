@@ -34,7 +34,7 @@ The project also includes a variables.env file, which holds environment variable
     Double click the bit-babbler_0.8_arm64.deb in the Install folder, to install it.
 
     In the terminal:
-    sudo nano /etc/udev/rules.d/99-BitBabbler.rules
+    sudo nano /etc/udev/rules.d/60-bit-babbler.rules (could be 99-BitBabbler.rules if it doesnt work)
 
     Copy this inside this file and save: 
 
