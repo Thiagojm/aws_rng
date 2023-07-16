@@ -2,45 +2,6 @@ import os
 import subprocess
 
 
-
-def change_env_file():
-    default_file_path = os.path.expanduser("~/Desktop/aws_rng/vars/variables.env.default")
-    target_file_path = os.path.expanduser("~/Desktop/aws_rng/vars/variables.env")
-
-    # Use the existing variables.env file as a template, if it exists.
-    # If it does not exist, use the default template.
-    template_file_path = target_file_path if os.path.exists(target_file_path) else default_file_path
-
-    with open(template_file_path, "r") as template_file, open(target_file_path, "w") as target_file:
-        for line in template_file:
-            line = line.strip()
-            if not line or line.startswith("#"):
-                target_file.write(line + "\n")
-                continue
-
-            # Extract key, default value, and comment from line
-            key, default_value_comment = line.split("=", 1)
-            key = key.strip()
-
-            if "#" in default_value_comment:
-                default_value, comment = default_value_comment.split("#", 1)
-                default_value = default_value.strip()
-                comment = comment.strip()
-            else:
-                default_value = default_value_comment.strip()
-                comment = ""
-
-            # Prompt user for new value
-            new_value = input(f"{key} ({comment}) [{default_value}]: ").strip()
-            if new_value == "":
-                new_value = default_value
-
-            # Write new value to target file
-            target_file.write(f"{key}={new_value}  # {comment}\n")
-
-    print("variables.env file updated successfully.")
-
-
 def create_env_file():
     # Path to the default file
     default_file_path = os.path.expanduser("~/Desktop/aws_rng/vars/variables.env.default")
