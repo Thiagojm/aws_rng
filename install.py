@@ -189,7 +189,7 @@ def wifi_setup():
     print("Setting Up Wifi...")
 
 def change_install():
-    change_env_file()
+    create_env_file()
 
 
 if __name__ == "__main__":
