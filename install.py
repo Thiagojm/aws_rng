@@ -42,7 +42,7 @@ def change_env_file():
                 default_value = existing_values[key]
 
             # Prompt user for new value
-            new_value = input(f"{comment} [{default_value}]: ").strip()
+            new_value = input(f"{key} ({comment}) [{default_value}]: ").strip()
             if new_value == "":
                 new_value = default_value
 
@@ -50,6 +50,7 @@ def change_env_file():
             target_file.write(f"{key}={new_value}  # {comment}\n")
 
     print("variables.env file updated successfully.")
+
 
 
 def create_env_file():
