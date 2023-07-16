@@ -14,12 +14,12 @@ The project also includes a variables.env file, which holds environment variable
 
 ## Requirements
 
-- Raspberry Pi with Python3 installed
+- Raspberry Pi with Python3 installed (https://www.tomshardware.com/reviews/raspberry-pi-headless-setup-how-to,6028.html - Refer to this guide if you want to setup a headless Raspberry Pi)
 - A TRNG device (TrueRNG) or Bitbbabler
 - Internet access
 - Python 3.x
 - lxterminal package installed (default in most Raspberry Pi distributions)
-- The following Python packages: **bitstring**, **python-dotenv**, **pyserial**, **boto3**, **requests**, **ntplib**, **pytz**.
+- The following Python packages: **bitstring**, **python-dotenv**, **pyserial**, **boto3**, **requests**, **ntplib**, **pytz**, **boto3**.
 
 ## Setup
 
