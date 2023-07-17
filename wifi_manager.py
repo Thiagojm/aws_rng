@@ -4,10 +4,9 @@ import subprocess
 WPA_SUPPLICANT_CONF = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
 def print_wpa_supplicant_content():
-    cmd = ["sudo", "cat", WPA_SUPPLICANT_CONF]
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    print("Current wpa_supplicant.conf content:")
-    print(result.stdout)
+    with open(WPA_SUPPLICANT_CONF, 'r') as f:
+        print("Current wpa_supplicant.conf content:")
+        print(f.read())
 
 def add_wifi(ssid, password):
     command = f'sudo bash -c \'printf "\\nnetwork={{\\n\\tssid=\\"{ssid}\\"\\n\\tpsk=\\"{password}\\"\\n}}\\n" >> {WPA_SUPPLICANT_CONF}\''
