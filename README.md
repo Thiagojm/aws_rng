@@ -1,6 +1,6 @@
 # True Random Number Generator (TRNG) Data Collector
 
-This Python application is designed for a Raspberry Pi with a TRNG device (TrueRNG, TrueRNGpro, or TrueRNGoroV2) or Bitbbabler. It reads in a number of bits from the TRNG at a user-specified interval and counts the number of 'ones'. The datetime and count are then stored in a .csv file and the bits collected are appended to a .bin file for control.
+This Python application is designed for a Raspberry Pi with a TRNG device (TrueRNG, TrueRNGpro, or TrueRNGoroV2) or Bitbabbler. It reads in a number of bits from the TRNG at a user-specified interval and counts the number of 'ones'. The datetime and count are then stored in a .csv file and the bits collected are appended to a .bin file for control.
 
 The project consists of three main scripts:
 
@@ -15,7 +15,7 @@ The project also includes a variables.env file, which holds environment variable
 ## Requirements
 
 - Raspberry Pi with Python3 installed (https://www.tomshardware.com/reviews/raspberry-pi-headless-setup-how-to,6028.html - Refer to this guide if you want to setup a headless Raspberry Pi)
-- A TRNG device (TrueRNG) or Bitbbabler
+- A TRNG device (TrueRNG) or Bitbabbler
 - Internet access
 - Python 3.x
 - lxterminal package installed (default in most Raspberry Pi distributions)
@@ -47,7 +47,7 @@ The project also includes a variables.env file, which holds environment variable
 
 2. In the `vars` folder, rename the `variables.env.default` to `variables.env` and edit to specify the sample size (in bits), the interval between samples, the duration for each data collection cycle, and the paths for the temporary and upload folders. Also give your raspberry a unique ID name, use your AWS keys and bucket name.
 
-3. To install Bitbbabler:
+3. To install Bitbabbler:
 > 
     Double click the bit-babbler_0.8_arm64.deb in the Install folder, to install it.
 
