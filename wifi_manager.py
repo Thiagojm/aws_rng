@@ -11,7 +11,10 @@ def add_wifi(ssid, password):
 def get_all_ssids():
     ssids = []
     with open(WPA_SUPPLICANT_CONF, "r") as f:
-        for line in f:
+        lines = f.readlines()
+        print("Current wpa_supplicant.conf content:")
+        print("".join(lines))
+        for line in lines:
             if "ssid" in line:
                 ssids.append(line.split('=')[1].strip().replace('"', ''))
     return ssids
@@ -39,7 +42,13 @@ def remove_wifi(ssid):
     # Replace wpa_supplicant.conf with the temp file
     os.system("sudo mv ./temp.conf {}".format(WPA_SUPPLICANT_CONF))
     subprocess.run(["wpa_cli", "-i", "wlan0", "reconfigure"], check=True)
+    print("\nAfter removing wifi:")
+    print("".join(open(WPA_SUPPLICANT_CONF, "r").readlines()))
 
 def edit_wifi(ssid, new_password):
+    print("\nBefore editing wifi:")
+    print("".join(open(WPA_SUPPLICANT_CONF, "r").readlines()))
     remove_wifi(ssid)
     add_wifi(ssid, new_password)
+    print("\nAfter editing wifi:")
+    print("".join(open(WPA_SUPPLICANT_CONF, "r").readlines()))
