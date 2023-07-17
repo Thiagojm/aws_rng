@@ -147,6 +147,7 @@ def main():
 def wifi_setup():
     while True:
         print("\n1. Add Wi-Fi\n2. Edit Wi-Fi\n3. Remove Wi-Fi\n4. Back")
+        wifi_manager.print_wpa_supplicant_content()  # Print the content before making changes
         choice = input("Choose an option: ")
         if choice == "1":
             ssid = input("Enter the SSID of the Wi-Fi network you want to add: ")
@@ -157,7 +158,7 @@ def wifi_setup():
             ssid = input("Enter the SSID of the Wi-Fi network you want to edit: ")
             new_password = input("Enter the new password: ")
             wifi_manager.edit_wifi(ssid, new_password)
-            print(f"Password updated for Wi-Fi network {ssid}.")
+            print(f"Wi-Fi network {ssid} updated successfully.")
         elif choice == "3":
             ssid = input("Enter the SSID of the Wi-Fi network you want to remove: ")
             wifi_manager.remove_wifi(ssid)
@@ -165,7 +166,9 @@ def wifi_setup():
         elif choice == "4":
             break
         else:
-            print("Invalid option. Please try again.")
+            print("Invalid option, please try again.")
+        wifi_manager.print_wpa_supplicant_content()  # Print the content after making changes
+
 
 
 def change_install():
