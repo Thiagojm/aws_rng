@@ -1,5 +1,6 @@
 import os
 import subprocess
+import traceback
 
 WPA_SUPPLICANT_CONF = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
@@ -25,37 +26,49 @@ def get_all_ssids():
     return ssids
 
 def remove_wifi(ssid):
-    print_wpa_supplicant_content()
-    # Copy wpa_supplicant.conf to a temp file
-    os.system("sudo cp {} ./temp.conf".format(WPA_SUPPLICANT_CONF))
-    
-    with open("temp.conf", "r") as f:
-        lines = f.readlines()
-    with open("temp.conf", "w") as f:
-        inside_network = False
-        for line in lines:
-            if "network={" in line:
-                inside_network = True
-            if inside_network and f'ssid="{ssid}"' in line:
-                continue
-            if "}" in line:
-                inside_network = False
-                if f'ssid="{ssid}"' not in lines:
+    try:
+        print("\nBefore removing wifi:")
+        print_wpa_supplicant_content()
+        # Copy wpa_supplicant.conf to a temp file
+        os.system("sudo cp {} ./temp.conf".format(WPA_SUPPLICANT_CONF))
+        
+        with open("temp.conf", "r") as f:
+            lines = f.readlines()
+        with open("temp.conf", "w") as f:
+            inside_network = False
+            for line in lines:
+                if "network={" in line:
+                    inside_network = True
+                if inside_network and f'ssid="{ssid}"' in line:
+                    continue
+                if "}" in line:
+                    inside_network = False
+                    if f'ssid="{ssid}"' not in lines:
+                        f.write(line)
+                elif not inside_network:
                     f.write(line)
-            elif not inside_network:
-                f.write(line)
-    
-    
-    # Replace wpa_supplicant.conf with the temp file
-    os.system("sudo mv ./temp.conf {}".format(WPA_SUPPLICANT_CONF))
-    subprocess.run(["wpa_cli", "-i", "wlan0", "reconfigure"], check=True)
-    print("\nAfter removing wifi:")
-    print_wpa_supplicant_content()
-
+        
+        
+        # Replace wpa_supplicant.conf with the temp file
+        os.system("sudo mv ./temp.conf {}".format(WPA_SUPPLICANT_CONF))
+        subprocess.run(["wpa_cli", "-i", "wlan0", "reconfigure"], check=True)
+        print("\nAfter removing wifi:")
+        print_wpa_supplicant_content()
+    except Exception as e:
+        print("An error occurred while removing wifi:")
+        print(e)
+        print(traceback.format_exc())
+        
+        
 def edit_wifi(ssid, new_password):
-    print("\nBefore editing wifi:")
-    print_wpa_supplicant_content()
-    remove_wifi(ssid)
-    add_wifi(ssid, new_password)
-    print("\nAfter editing wifi:")
-    print_wpa_supplicant_content()
+    try:
+        print("\nBefore editing wifi:")
+        print_wpa_supplicant_content()
+        remove_wifi(ssid)
+        add_wifi(ssid, new_password)
+        print("\nAfter editing wifi:")
+        print_wpa_supplicant_content()
+    except Exception as e:
+        print("An error occurred while editing wifi:")
+        print(e)
+        print(traceback.format_exc())
