@@ -3,6 +3,12 @@ import subprocess
 
 WPA_SUPPLICANT_CONF = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
+def print_wpa_supplicant_content():
+    cmd = ["sudo", "cat", WPA_SUPPLICANT_CONF]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    print("Current wpa_supplicant.conf content:")
+    print(result.stdout)
+
 def add_wifi(ssid, password):
     command = f'sudo bash -c \'printf "\\nnetwork={{\\n\\tssid=\\"{ssid}\\"\\n\\tpsk=\\"{password}\\"\\n}}\\n" >> {WPA_SUPPLICANT_CONF}\''
     os.system(command)
@@ -20,6 +26,7 @@ def get_all_ssids():
     return ssids
 
 def remove_wifi(ssid):
+    print_wpa_supplicant_content()
     # Copy wpa_supplicant.conf to a temp file
     os.system("sudo cp {} ./temp.conf".format(WPA_SUPPLICANT_CONF))
     
@@ -39,16 +46,17 @@ def remove_wifi(ssid):
             elif not inside_network:
                 f.write(line)
     
+    
     # Replace wpa_supplicant.conf with the temp file
     os.system("sudo mv ./temp.conf {}".format(WPA_SUPPLICANT_CONF))
     subprocess.run(["wpa_cli", "-i", "wlan0", "reconfigure"], check=True)
     print("\nAfter removing wifi:")
-    print("".join(open(WPA_SUPPLICANT_CONF, "r").readlines()))
+    print_wpa_supplicant_content()
 
 def edit_wifi(ssid, new_password):
     print("\nBefore editing wifi:")
-    print("".join(open(WPA_SUPPLICANT_CONF, "r").readlines()))
+    print_wpa_supplicant_content()
     remove_wifi(ssid)
     add_wifi(ssid, new_password)
     print("\nAfter editing wifi:")
-    print("".join(open(WPA_SUPPLICANT_CONF, "r").readlines()))
+    print_wpa_supplicant_content()
