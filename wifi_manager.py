@@ -1,61 +1,44 @@
 import os
 import subprocess
-import traceback
 
 WPA_SUPPLICANT_CONF = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
 def print_wpa_supplicant_content():
-    with open(WPA_SUPPLICANT_CONF, 'r') as f:
-        print("Current wpa_supplicant.conf content:")
-        print(f.read())
+    try:
+        print(subprocess.check_output(['sudo', 'cat', WPA_SUPPLICANT_CONF]).decode())
+    except Exception as e:
+        print(f"Failed to print the content of wpa_supplicant.conf: {str(e)}")
 
 def add_wifi(ssid, password):
-    command = f'sudo bash -c \'printf "\\nnetwork={{\\n\\tssid=\\"{ssid}\\"\\n\\tpsk=\\"{password}\\"\\n}}\\n" >> {WPA_SUPPLICANT_CONF}\''
-    os.system(command)
-    subprocess.run(["wpa_cli", "-i", "wlan0", "reconfigure"], check=True)
+    try:
+        with open(WPA_SUPPLICANT_CONF, "a") as f:
+            f.write('\nnetwork={\n')
+            f.write(f'\tssid="{ssid}"\n')
+            f.write(f'\tpsk="{password}"\n')
+            f.write('}\n')
+    except Exception as e:
+        print(f"Failed to add Wi-Fi: {str(e)}")
 
-def get_all_ssids():
-    ssids = []
-    with open(WPA_SUPPLICANT_CONF, "r") as f:
-        lines = f.readlines()
-        print("Current wpa_supplicant.conf content:")
-        print("".join(lines))
-        for line in lines:
-            if "ssid" in line:
-                ssids.append(line.split('=')[1].strip().replace('"', ''))
-    return ssids
+def edit_wifi(ssid, password):
+    try:
+        network_string = subprocess.check_output(['sudo', 'cat', WPA_SUPPLICANT_CONF]).decode()
+        networks = network_string.split('network={')[1:]
+        for i, network in enumerate(networks):
+            if f'ssid="{ssid}"' in network:
+                networks[i] = f'\nnetwork={{\n\tssid="{ssid}"\n\tpsk="{password}"\n}}\n'
+        network_string = 'network={'.join(networks)
+        with open(WPA_SUPPLICANT_CONF, 'w') as f:
+            f.write(network_string)
+    except Exception as e:
+        print(f"Failed to edit Wi-Fi: {str(e)}")
 
 def remove_wifi(ssid):
-    # Copy wpa_supplicant.conf to a temp file
-    os.system("sudo cp {} ./temp.conf".format(WPA_SUPPLICANT_CONF))
-    
-    with open("temp.conf", "r") as f:
-        lines = f.readlines()
-    with open("temp.conf", "w") as f:
-        inside_network = False
-        for line in lines:
-            if "network={" in line:
-                inside_network = True
-            if inside_network and f'ssid="{ssid}"' in line:
-                continue
-            if "}" in line:
-                inside_network = False
-                if f'ssid="{ssid}"' not in lines:
-                    f.write(line)
-            elif not inside_network:
-                f.write(line)
-    
-    
-    # Replace wpa_supplicant.conf with the temp file
-    os.system("sudo mv ./temp.conf {}".format(WPA_SUPPLICANT_CONF))
-    subprocess.run(["wpa_cli", "-i", "wlan0", "reconfigure"], check=True)
-    print("\nAfter removing wifi:")
-    print_wpa_supplicant_content()
-    
-        
-        
-def edit_wifi(ssid, new_password):
-    remove_wifi(ssid)
-    add_wifi(ssid, new_password)
-    print("\nAfter editing wifi:")
-    print_wpa_supplicant_content()
+    try:
+        network_string = subprocess.check_output(['sudo', 'cat', WPA_SUPPLICANT_CONF]).decode()
+        networks = network_string.split('network={')[1:]
+        networks = [network for network in networks if f'ssid="{ssid}"' not in network]
+        network_string = 'network={'.join(networks)
+        with open(WPA_SUPPLICANT_CONF, 'w') as f:
+            f.write(network_string)
+    except Exception as e:
+        print(f"Failed to remove Wi-Fi: {str(e)}")
