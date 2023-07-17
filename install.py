@@ -1,6 +1,6 @@
 import os
 import subprocess
-
+import wifi_manager
 
 def create_env_file():
     # Path to the default file
@@ -146,8 +146,31 @@ def main():
 
 
 def wifi_setup():
-    # Implement your wifi setup procedure here
-    print("Setting Up Wifi...")
+    import wifi_manager
+
+def wifi_setup():
+    while True:
+        print("\n1. Add Wi-Fi\n2. Edit Wi-Fi\n3. Remove Wi-Fi\n4. Back")
+        choice = input("Choose an option: ")
+        if choice == "1":
+            ssid = input("Enter the SSID of the Wi-Fi network you want to add: ")
+            password = input("Enter the password: ")
+            wifi_manager.add_wifi(ssid, password)
+            print(f"Wi-Fi network {ssid} added successfully.")
+        elif choice == "2":
+            ssid = input("Enter the SSID of the Wi-Fi network you want to edit: ")
+            new_password = input("Enter the new password: ")
+            wifi_manager.edit_wifi(ssid, new_password)
+            print(f"Password updated for Wi-Fi network {ssid}.")
+        elif choice == "3":
+            ssid = input("Enter the SSID of the Wi-Fi network you want to remove: ")
+            wifi_manager.remove_wifi(ssid)
+            print(f"Wi-Fi network {ssid} removed successfully.")
+        elif choice == "4":
+            break
+        else:
+            print("Invalid option. Please try again.")
+
 
 def change_install():
     create_env_file()
