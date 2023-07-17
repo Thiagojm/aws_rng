@@ -47,7 +47,7 @@ def create_env_file():
 
 
 def full_install():
-    print("Starting Full Install...")
+    print("Starting Full Install, please wait...")
 
     # Install Python packages
     packages = ["bitstring", "python-dotenv", "pyserial", "requests", "ntplib", "pytz", "boto3", "ntplib"]

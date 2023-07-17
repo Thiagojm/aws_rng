@@ -23,6 +23,24 @@ The project also includes a variables.env file, which holds environment variable
 
 ## Setup
 
+### Easy Setup
+
+1. Clone the repository in your Desktop folder:
+> 
+    git clone https://github.com/Thiagojm/aws_rng.git
+
+2. In the terminal go to yor aws_rng folder and:
+> 
+    python install.py
+
+3. Choose the option "Full Install"
+
+4. Later if you want to change the parameters just choose "Change Install"
+
+5. Reboot the device.
+
+### Manual Setup
+
 1. Install the required packages if they are not already installed: 
 >
     pip install bitstring python-dotenv pyserial requests ntplib pytz
@@ -41,9 +59,7 @@ The project also includes a variables.env file, which holds environment variable
     # Voicetronics BitBabbler Black and White
     SUBSYSTEM=="usb", ACTION=="add|change", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="7840", SYMLINK="BitBabbler", MODE="0666"
 
-## Installation
-
-Clone the repository or copy the scripts to your Raspberry Pi.
+4. Clone the repository or copy the scripts to your Raspberry Pi.
 Give execute permissions to the scripts:
 
 >
@@ -51,12 +67,12 @@ Give execute permissions to the scripts:
     chmod +x /path/to/rng_collect.py  
     chmod +x /path/to/send_aws.py
 
-Create an autostart entry:
+5. Create an autostart entry:
 
 > 
-    nano /home/pi/.config/autostart/start_rng.desktop
+    sudo nano /home/pi/.config/autostart/start_rng.desktop
 
-Insert the following content into the .desktop file, changing the path to the path of your script:
+6. Insert the following content into the .desktop file, changing the path to the path of your script, save and exit the file:
 
 >
     [Desktop Entry]
@@ -64,11 +80,11 @@ Insert the following content into the .desktop file, changing the path to the pa
     Name=StartRng
     Exec=/usr/bin/lxterminal -e "python3 /path/to/start_rng.py.py; bash"
 
-Save and exit the file.  
-Make the .desktop file executable:
+ 
+7. Make the .desktop file executable:
 
 >
-    chmod +x /home/pi/.config/autostart/start_rng.desktop
+    sudo chmod +x /home/pi/.config/autostart/start_rng.desktop
 
 ## Usage
 
