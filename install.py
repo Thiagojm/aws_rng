@@ -156,8 +156,7 @@ def wifi_setup():
         elif choice == "2":
             wifi_manager.print_wpa_supplicant_content()  # Print the content before making changes
             ssid = input("Enter the SSID of the Wi-Fi network you want to edit: ")
-            new_password = input("Enter the new password: ")
-            wifi_manager.edit_wifi(ssid, new_password)
+            wifi_manager.edit_wifi(ssid)
             print(f"Wi-Fi network {ssid} updated successfully.")
         elif choice == "3":
             wifi_manager.print_wpa_supplicant_content()  # Print the content before making changes
