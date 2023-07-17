@@ -4,7 +4,7 @@ import subprocess
 WPA_SUPPLICANT_CONF = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
 def add_wifi(ssid, password):
-    command = f'sudo sh -c \'echo -e "\\nnetwork={{\\n\\tssid=\\"{ssid}\\"\\n\\tpsk=\\"{password}\\"\\n}}\\n" >> {WPA_SUPPLICANT_CONF}\''
+    command = f'sudo bash -c \'printf "\\nnetwork={{\\n\\tssid=\\"{ssid}\\"\\n\\tpsk=\\"{password}\\"\\n}}\\n" >> {WPA_SUPPLICANT_CONF}\''
     os.system(command)
     subprocess.run(["wpa_cli", "-i", "wlan0", "reconfigure"], check=True)
 
