@@ -1,5 +1,6 @@
 import os
 import subprocess
+import tempfile
 
 WPA_SUPPLICANT_CONF = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
@@ -11,11 +12,13 @@ def print_wpa_supplicant_content():
 
 def add_wifi(ssid, password):
     try:
-        with open(WPA_SUPPLICANT_CONF, "a") as f:
-            f.write('\nnetwork={\n')
-            f.write(f'\tssid="{ssid}"\n')
-            f.write(f'\tpsk="{password}"\n')
-            f.write('}\n')
+        network_string = f'\nnetwork={{\n\tssid="{ssid}"\n\tpsk="{password}"\n}}\n'
+        with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
+            tmpfile.write(network_string.encode())
+        
+        # Append the new network to the original file
+        subprocess.check_call(['sudo', 'bash', '-c', f'cat {tmpfile.name} >> {WPA_SUPPLICANT_CONF}'])
+
     except Exception as e:
         print(f"Failed to add Wi-Fi: {str(e)}")
 
@@ -27,8 +30,13 @@ def edit_wifi(ssid, password):
             if f'ssid="{ssid}"' in network:
                 networks[i] = f'\nnetwork={{\n\tssid="{ssid}"\n\tpsk="{password}"\n}}\n'
         network_string = 'network={'.join(networks)
-        with open(WPA_SUPPLICANT_CONF, 'w') as f:
-            f.write(network_string)
+        
+        with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
+            tmpfile.write(network_string.encode())
+        
+        # Replace the original file with the temp file
+        subprocess.check_call(['sudo', 'mv', tmpfile.name, WPA_SUPPLICANT_CONF])
+
     except Exception as e:
         print(f"Failed to edit Wi-Fi: {str(e)}")
 
@@ -38,7 +46,11 @@ def remove_wifi(ssid):
         networks = network_string.split('network={')[1:]
         networks = [network for network in networks if f'ssid="{ssid}"' not in network]
         network_string = 'network={'.join(networks)
-        with open(WPA_SUPPLICANT_CONF, 'w') as f:
-            f.write(network_string)
+        
+        with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
+            tmpfile.write(network_string.encode())
+        
+        # Replace the original file with the temp file
+        subprocess.check_call(['sudo', 'mv', tmpfile.name, WPA_SUPPLICANT_CONF])
     except Exception as e:
         print(f"Failed to remove Wi-Fi: {str(e)}")
