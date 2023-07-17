@@ -120,7 +120,6 @@ def full_install():
     create_env_file()
 
 
-    
 def main():
     while True:
         print("Welcome to Raspberry Pi Installer!")
@@ -144,9 +143,6 @@ def main():
 
         print("\n")  # print a newline for better readability
 
-
-def wifi_setup():
-    import wifi_manager
 
 def wifi_setup():
     while True:
