@@ -90,6 +90,10 @@ Give execute permissions to the scripts:
 
 The scripts will run automatically on startup. The main script checks for an internet connection and synchronizes the system time, while the rng_collect.py and send_aws.py scripts will be launched in separate terminal windows.
 
+Obs: Try using this command if bitbabbler stops working:
+> 
+    sudo service seedd stop
+
 ## Support
 
 If you encounter any problems or have any suggestions, please open an issue or a pull request.
