@@ -13,8 +13,10 @@ def main():
     chk_bitb = sm.check_bitb()
     chk_trng = sm.check_trng()
     if chk_bitb == False and chk_trng == None:
-        print('No RNG device found. Exiting.')
-        return
+        print('No TRNG device found. Starting PseudoRNG, for testing only.')
+        device = 'pseudo'
+        filename_base = sm.get_filename(num_bits, interval, device, fold)
+        sm.pseudo_cap(device, temp_folder, upload_folder, filename_base, num_bits, interval, sample_duration)
     elif chk_bitb == True:
         print('Using bitbbabler as RNG device.')
         device = 'bitb'

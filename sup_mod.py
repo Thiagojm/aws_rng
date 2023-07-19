@@ -1,4 +1,5 @@
 import csv
+import secrets
 import subprocess
 import serial
 import time
@@ -27,6 +28,42 @@ def check_and_create_folders(temp_folder, upload_folder):
 
     if not os.path.exists(upload_folder):
         os.makedirs(upload_folder)
+
+
+########## Pseudo ##########
+
+def pseudo_cap(device, temp_folder, upload_folder, filename_base, num_bits, interval, sample_duration):
+    start_time = time.time()
+    print(f"Starting capture...\n")
+    num_loop = 1
+    total_bytes = 0
+    while True:
+        try:
+            current_time = time.time()
+            if current_time - start_time >= sample_duration:
+                num_loop = 1
+                total_bytes = 0
+                filename_base = move_files_and_update_filename(temp_folder, upload_folder, num_bits, interval, device, fold=0)
+                start_time = current_time  # reset the start time
+            
+            bits = secrets.token_bytes(num_bits // 8)
+            count = count_ones(bits)
+            
+            # Write data to files in TEMP_FOLDER
+            write_to_csv(count, os.path.join(temp_folder, filename_base + '.csv'))
+            write_to_bin(bits, os.path.join(temp_folder, filename_base + '.bin'))
+
+            # Sleep for the remaining time
+            total_bytes += num_bits / 8    
+            print(f"Collecting data - Loop: {num_loop} - Total bytes collected: {int(total_bytes)}")
+            num_loop += 1
+            time.sleep(max(interval - (time.time() - current_time), 0))
+        except KeyboardInterrupt:
+            print('Keyboard interrupt detected. Exiting.')
+            return
+        except Exception as e:
+            print(f'Error: {e}')
+            return
 
 ########## Bitbabbler ##########
 # check for bitbbabler
@@ -219,24 +256,5 @@ def write_to_bin(bits, filename):
 def count_ones(bits):
     bit_array = BitArray(bytes=bits)
     return bit_array.count('0b1')
-
-
-
-# def get_rng_and_filename(num_bits, interval):
-#     rng_com_port = find_trng()
-#     if rng_com_port is None:
-#         print('No RNG device found. Exiting.')
-#         return None, None
-
-#     rng = setup_serial(rng_com_port)
-
-#     # Get current datetime and format it
-#     now = datetime.now()
-#     formatted_now = now.strftime("%Y%m%dT%H%M%S")
-
-#     # Create base filename with pi serial and current datetime
-#     filename_base = f'{formatted_now}_trng_s{num_bits}_i{interval}'  # 'pi_serial_2023-07-12T16:35:12_trng_s1000000_i0.1
-
-#     return rng, filename_base
 
 
