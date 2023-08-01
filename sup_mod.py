@@ -79,12 +79,12 @@ def check_bitb():
     chunk, _ = process.communicate()
     msg = chunk.decode()
     if "No devices found" in msg or msg == "":
-        print("No bitbbalber device found.")
+        print("No bitbabbler device found.")
         return False
     else:
-        print("Found bitbbalber device.")
+        print("Found bitbabbler device.")
         process_2 = subprocess.Popen(service_stop, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        time.sleep(2)
+        time.sleep(4)
         return True
 
 # Loop for bitbbabler
