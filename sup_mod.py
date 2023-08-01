@@ -84,6 +84,7 @@ def check_bitb():
     else:
         print("Found bitbbalber device.")
         process_2 = subprocess.Popen(service_stop, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        time.sleep(2)
         return True
 
 # Loop for bitbbabler
