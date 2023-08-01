@@ -70,6 +70,7 @@ def pseudo_cap(device, temp_folder, upload_folder, filename_base, num_bits, inte
 def check_bitb():
     # the command to run
     command = "seedd -sv"
+    service_stop = "sudo service seedd stop"
 
     # create the process
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -82,6 +83,7 @@ def check_bitb():
         return False
     else:
         print("Found bitbbalber device.")
+        process_2 = subprocess.Popen(service_stop, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         return True
 
 # Loop for bitbbabler
