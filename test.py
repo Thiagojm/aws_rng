@@ -3,6 +3,6 @@ import subprocess
 
 try:
     subprocess.check_call(["sudo", "systemctl", "disable", "--now", "seedd.service"])
-    print("Device installed successfully.")
+    print("seedd.service disabled successfully.")
 except subprocess.CalledProcessError:
-    print("Failed to install the device.")
+    print("Failed to disable seedd.service.")

@@ -67,6 +67,13 @@ def full_install():
         print("Failed to install the device.")
         return
 
+    # Disable and stop seedd.service deamon
+    try:
+        subprocess.check_call(["sudo", "systemctl", "disable", "--now", "seedd.service"])
+        print("seedd.service disabled successfully.")
+    except subprocess.CalledProcessError:
+        print("Failed to disable seedd.service.")
+    
     # Create the UDEV rule
     udev_rule = (
         '# Voicetronics BitBabbler Black and White\n'
